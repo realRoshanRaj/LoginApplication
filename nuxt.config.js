@@ -6,7 +6,7 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    titleTemplate: '%s' /* +'- ' + process.env.npm_package_name */,
+    // titleTemplate: '%s' /* +'- ' + process.env.npm_package_name */,
     title: "Roshan's Auth Example",
     meta: [
       { charset: 'utf-8' },
@@ -72,10 +72,10 @@ module.exports = {
       }
     },
     defaultAssets: {
-      icons: 'md'
+      icons: 'fa'
     },
     icons: {
-      iconfont: 'md'
+      iconfont: 'fa'
     }
   },
   /*
