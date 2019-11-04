@@ -3,7 +3,18 @@
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="5">
         <v-card class="elevation-12">
-          <v-card-title>Signup</v-card-title>
+          <v-card-title>
+            <v-spacer></v-spacer>
+            <v-btn tile dark color="#4885ed"
+              ><v-icon left light>fab fa-google</v-icon>
+              <v-divider class="mr-2" vertical dark></v-divider>Signup with
+              Google</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-title>
+          <div class="flex-grow-1"></div>
+          <div class="separator">OR</div>
+
           <div class="flex-grow-1"></div>
           <v-card-text>
             <v-form method="post" @submit.prevent="register">
@@ -53,7 +64,7 @@
                 block
                 color="green"
                 type="submit"
-                >Register</v-btn
+                >Create an Account</v-btn
               >
             </v-form>
           </v-card-text>
@@ -102,6 +113,11 @@ export default {
       sameAsPassword: sameAs('password'),
       required
     }
+  },
+  head() {
+    return {
+      titleTemplate: '%s - Signup'
+    };
   },
 
   data: () => ({

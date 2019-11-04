@@ -3,7 +3,17 @@
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="5">
         <v-card class="elevation-12">
-          <v-card-title>Login</v-card-title>
+          <v-card-title>
+            <v-spacer></v-spacer>
+            <v-btn tile dark color="#4885ed"
+              ><v-icon left light>fab fa-google</v-icon>
+              <v-divider class="mr-2" vertical dark></v-divider>Sign in with
+              Google</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-title>
+          <div class="flex-grow-1"></div>
+          <div class="separator">OR</div>
           <div class="flex-grow-1"></div>
           <v-card-text>
             <v-form method="post" @submit.prevent="login">
@@ -23,7 +33,7 @@
                 :error-messages="passwordErrors"
                 label="Password"
                 :type="showPassword ? 'text' : 'password'"
-                :append-icon="showPassword ? 'visibility' : 'visibility_off'"
+                :append-icon="showPassword ? 'far fa-eye-slash' : 'far fa-eye'"
                 outlined
                 @click:append="showPassword = !showPassword"
                 @input="$v.password.$touch()"
@@ -74,7 +84,6 @@ export default {
     },
     password: { required }
   },
-
   data: () => ({
     name: '',
     password: '',
@@ -82,6 +91,11 @@ export default {
     loading: false,
     showPassword: false
   }),
+  head() {
+    return {
+      titleTemplate: '%s - Login'
+    };
+  },
   computed: {
     nameErrors() {
       const errors = [];

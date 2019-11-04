@@ -49,12 +49,12 @@
               <div slot="append">
                 <v-btn v-if="emailEnabled" icon @click="saveBttn">
                   <v-icon color="green">{{
-                    emailEnabled ? 'done' : undefined
+                    emailEnabled ? 'fas fa-check' : undefined
                   }}</v-icon>
                 </v-btn>
                 <v-btn icon @click="editResetEmail">
                   <v-icon :color="emailEnabled ? 'red' : undefined">{{
-                    emailEnabled ? 'close' : 'edit'
+                    emailEnabled ? 'fas fa-times' : 'fas fa-pen'
                   }}</v-icon>
                 </v-btn>
               </div>
@@ -97,7 +97,7 @@
                   rounded
                   :type="showOldPass ? 'text' : 'password'"
                   label="Current Password"
-                  :append-icon="showOldPass ? 'visibility' : 'visibility_off'"
+                  :append-icon="showOldPass ? 'far fa-eye-slash' : 'far fa-eye'"
                   @click:append="showOldPass = !showOldPass"
                 ></v-text-field>
               </div>
@@ -111,7 +111,7 @@
                   :type="showNewPass ? 'text' : 'password'"
                   rounded
                   label="New Password"
-                  :append-icon="showNewPass ? 'visibility' : 'visibility_off'"
+                  :append-icon="showNewPass ? 'far fa-eye-slash' : 'far fa-eye'"
                   @click:append="showNewPass = !showNewPass"
                   @input="$v.newPassword.$touch()"
                   @blur="$v.newPassword.$touch()"
@@ -251,6 +251,11 @@ export default {
     snackBarColor: undefined,
     deleteAccountConfirmation: false
   }),
+  head() {
+    return {
+      titleTemplate: '%s - Profile'
+    };
+  },
   validations: {
     email: { required, email },
     newPassword: {
