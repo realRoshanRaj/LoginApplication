@@ -1,9 +1,27 @@
 const bcrypt = require('bcrypt');
-require('dotenv').config();
-// const Cryptr = require('cryptr');
-// const cryptr = new Cryptr(process.env.SECRET_ENCRYPTION_KEY); // not in use
 const User = require('../models/user');
 
+// Google Stategy
+exports.googleAuth = async function(profile) {
+  // check if User Already exits
+  let user = await User.findOne({ type: 'google', 'data.id': profile.id });
+  if (user) return { user };
+  // create db entry if user doesn't exist
+  const json = profile._json;
+  user = new User({
+    type: 'google',
+    data: {
+      id: json.sub,
+      username: json.name,
+      email: json.email,
+      avatar: json.picture
+    }
+  });
+  const savedUser = await user.save();
+  return { user: savedUser };
+};
+
+// Local Strategy
 exports.username_unique = async function(username) {
   username = username.trim().toLowerCase();
   if (!username) {
@@ -23,20 +41,10 @@ exports.username_unique = async function(username) {
 
 exports.validateUser = async function(username, password) {
   if (username && password) {
-    const user = await User.findOne(
-      {
-        type: 'local',
-        'data.username': username
-      }
-      // function(user, error) {
-      //   if (error) {
-      //     return { valid: false, errMessage: error }
-      //   }
-      //   if (!user) {
-      //     return { valid: false, errMmessage: 'Incorrect username.' }
-      //   }
-      // }
-    );
+    const user = await User.findOne({
+      type: 'local',
+      'data.username': username
+    });
     if (!user) {
       return { valid: false, errMmessage: 'Incorrect username.' };
     }
@@ -60,7 +68,8 @@ exports.register = async function(username, email, password) {
         data: {
           username,
           email,
-          passwordHash: bcrypt.hashSync(password, 10)
+          passwordHash: bcrypt.hashSync(password, 10),
+          avatar: '/defaultProfilePic.png'
         }
       });
 
@@ -81,12 +90,11 @@ exports.getEmail = function(encryptedEmail) {
   return { encryptedEmail };
 };
 
-exports.updateEmail = async function(username, email) {
-  username = username.toLowerCase().trim();
+exports.updateEmail = async function(id, email) {
   email = email.trim();
   if (email) {
-    const user = await User.findOneAndUpdate(
-      { type: 'local', 'data.username': username },
+    const user = await User.findByIdAndUpdate(
+      { _id: id },
       { 'data.email': email }
     );
     return { success: true };

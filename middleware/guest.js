@@ -6,6 +6,10 @@ export default function({ store, redirect, req }) {
       'profile/updateUsername',
       isAuthenticated ? req.user.data.username : 'Guest'
     );
+    store.commit(
+      'profile/updateAvatarURL',
+      isAuthenticated ? req.user.data.avatar : '/defaultProfilePic.png'
+    );
     if (store.state.login.isAuthenticated) {
       redirect('/');
     }

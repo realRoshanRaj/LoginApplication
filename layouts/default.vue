@@ -8,7 +8,7 @@
     >
       <v-list-item>
         <v-list-item-avatar>
-          <v-img src="/defaultProfilePic.png"></v-img>
+          <v-img :src="this.$store.state.profile.avatarURL"></v-img>
         </v-list-item-avatar>
 
         <v-list-item-content>
@@ -104,10 +104,10 @@ export default {
       fixed: false,
       collapsed: true,
       items: [
-        { title: 'Home', icon: 'home', link: '/', isHref: false },
+        { title: 'Home', icon: 'fas fa-home', link: '/', isHref: false },
         {
           title: 'Profile',
-          icon: 'account_circle',
+          icon: 'fas fa-user',
           link: '/profile',
           isHref: true
         }
