@@ -1,6 +1,8 @@
 export const state = () => ({
   username: 'Guest',
-  email: ''
+  email: '',
+  oauth: false,
+  avatarURL: '/defaultProfilePic.png'
 });
 
 export const mutations = {
@@ -9,5 +11,11 @@ export const mutations = {
   },
   updateEmail(state, email) {
     state.email = email;
+  },
+  updateOAuth(state, oauth) {
+    state.oauth = oauth;
+  },
+  updateAvatarURL(state, value) {
+    state.avatarURL = value;
   }
 };

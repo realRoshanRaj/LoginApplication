@@ -10,6 +10,12 @@ export default function({ store, redirect, req }) {
       redirect('/login');
     } else {
       store.commit('profile/updateEmail', req.user.data.email);
+      if (req.user.type === 'google') {
+        store.commit('profile/updateOAuth', true);
+        store.commit('profile/updateAvatarURL', req.user.data.avatar);
+      } else if (req.user.type === 'local') {
+        store.commit('profile/updateOAuth', false);
+      }
     }
   }
 }

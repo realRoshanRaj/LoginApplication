@@ -5,7 +5,7 @@
         <v-card class="elevation-12">
           <v-card-title>
             <v-spacer></v-spacer>
-            <v-btn tile dark color="#4885ed"
+            <v-btn tile dark color="#4885ed" href="/api/auth/google"
               ><v-icon left light>fab fa-google</v-icon>
               <v-divider class="mr-2" vertical dark></v-divider>Signup with
               Google</v-btn

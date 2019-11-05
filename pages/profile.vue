@@ -41,12 +41,13 @@
               solo
               flat
               rounded
+              :disabled="this.$store.state.profile.oauth"
               :error-messages="emailErrors"
               :readonly="!emailEnabled"
               @input="$v.email.$touch()"
               @blur="$v.email.$touch()"
             >
-              <div slot="append">
+              <div v-if="!this.$store.state.profile.oauth" slot="append">
                 <v-btn v-if="emailEnabled" icon @click="saveBttn">
                   <v-icon color="green">{{
                     emailEnabled ? 'fas fa-check' : undefined
@@ -76,7 +77,7 @@
 
     <v-progress-linear buffer-value="0" stream color=""></v-progress-linear>
 
-    <section>
+    <section v-if="!this.$store.state.profile.oauth">
       <v-row class="ma-1">
         <v-col cols="12" xl="5" lg="5" md="6">
           <v-card tile flat color="transparent">
@@ -165,9 +166,8 @@
           </v-card>
         </v-col>
       </v-row>
+      <v-progress-linear buffer-value="0" stream color=""></v-progress-linear>
     </section>
-
-    <v-progress-linear buffer-value="0" stream color=""></v-progress-linear>
 
     <section>
       <v-row class="ma-1">
@@ -314,11 +314,10 @@ export default {
     async saveBttn() {
       if (this.emailEnabled) {
         // save new email to account
-        this.$v.$touch();
-        if (!this.$v.$invalid) {
+        this.$v.email.$touch();
+        if (!this.$v.email.$invalid) {
           if (this.email !== this.$store.state.profile.email) {
             const response = await axios.post('/api/auth/updateEmail', {
-              username: this.$store.state.profile.username,
               email: this.email
             });
             if (response.data.success) {

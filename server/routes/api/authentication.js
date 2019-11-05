@@ -26,7 +26,7 @@ router.post('/register', function(req, res, next) {
       }
     });
 });
-
+// local login
 router.post(
   '/login',
   passport.authenticate('local', {
@@ -34,6 +34,21 @@ router.post(
   }),
   function(req, res) {
     res.json({ loggedIn: true, user: req.user });
+  }
+);
+
+// google login
+router.get(
+  '/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+router.get(
+  '/googleRedirect',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect profile.
+    res.redirect('/profile');
   }
 );
 
@@ -62,7 +77,7 @@ router.post('/getEmail', function(req, res) {
 });
 
 router.post('/updateEmail', function(req, res) {
-  controller.updateEmail(req.body.username, req.body.email).then((response) => {
+  controller.updateEmail(req.user._id, req.body.email).then((response) => {
     res.json(response);
   });
 });

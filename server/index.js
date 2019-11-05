@@ -7,14 +7,13 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 // Auth
 const session = require('express-session');
-// const cookieSession = require('cookie-session');
 const flash = require('connect-flash');
+require('dotenv').config();
 const passport = require('passport');
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js');
 require('./configs/passport');
 config.dev = process.env.NODE_ENV !== 'production';
-require('dotenv').config();
 
 const uri = process.env.DB_URL;
 
