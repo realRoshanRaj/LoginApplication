@@ -1,4 +1,6 @@
 const bcrypt = require('bcrypt');
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const User = require('../models/user');
 
 // Google Stategy
@@ -85,48 +87,13 @@ exports.register = async function(username, email, password) {
   }
 };
 
-exports.getEmail = function(encryptedEmail) {
-  // return cryptr.decrypt(encryptedEmail);
-  return { encryptedEmail };
-};
-
-exports.updateEmail = async function(id, email) {
-  email = email.trim();
-  if (email) {
-    const user = await User.findByIdAndUpdate(
-      { _id: id },
-      { 'data.email': email }
-    );
-    return { success: true };
-  }
-
-  return { success: false };
-};
-
-exports.changePassword = async function(user, currentPassword, newPassword) {
-  if (user) {
-    if (bcrypt.compareSync(currentPassword, user.data.passwordHash)) {
-      await User.findOneAndUpdate(
-        { type: 'local', 'data.username': user.data.username },
-        { 'data.passwordHash': bcrypt.hashSync(newPassword, 10) }
-      );
-      return {
-        message:
-          'Password Successfully Changed. You will be directed to the login page.',
-        success: true
-      };
-    } else {
-      return { message: 'Current Password Does Not Match', success: false };
-    }
-  } else {
-    return { message: 'User not found', success: false };
-  }
-};
-
-exports.deleteUser = async function(user) {
-  if (user) {
-    const id = user._id;
-    await User.findByIdAndDelete({ _id: id });
-    return { success: true };
-  }
+exports.passwordReset = function(email) {
+  const msg = {
+    to: email,
+    from: 'test@example.com',
+    subject: 'Password Reset for Nuxt Authentication',
+    text: 'and easy to do anywhere, even with Node.js',
+    html: '<strong>and easy to do anywhere, even with Node.js</strong>'
+  };
+  sgMail.send(msg);
 };

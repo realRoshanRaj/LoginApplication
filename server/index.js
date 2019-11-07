@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 // Auth
 const session = require('express-session');
+const fileUpload = require('express-fileupload');
 const flash = require('connect-flash');
 require('dotenv').config();
 const passport = require('passport');
@@ -35,6 +36,7 @@ async function start() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
+  app.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }));
 
   mongoose
     .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })

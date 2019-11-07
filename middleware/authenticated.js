@@ -19,6 +19,7 @@ export default function({ store, redirect, req }) {
         store.commit('profile/updateAvatarURL', req.user.data.avatar);
       } else if (req.user.type === 'local') {
         store.commit('profile/updateOAuth', false);
+        store.commit('profile/updateAvatarURL', req.user.data.avatar);
       }
     }
   }

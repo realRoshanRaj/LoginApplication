@@ -37,6 +37,8 @@ router.post(
   }
 );
 
+router.get('/passwordReset', function(req, res) {});
+
 // google login
 router.get(
   '/google',
@@ -67,35 +69,4 @@ router.get('/logout', function(req, res, next) {
   }
 });
 // ------------------------AUTHENTICATION ABOVE-------------------------------
-router.post('/getEmail', function(req, res) {
-  // res.send(controller.getEmail(req.user.data.email));
-  if (req.body.email) {
-    res.json({ email: controller.getEmail(req.body.email) });
-  } else {
-    res.json({ email: 'no email' });
-  }
-});
-
-router.post('/updateEmail', function(req, res) {
-  controller.updateEmail(req.user._id, req.body.email).then((response) => {
-    res.json(response);
-  });
-});
-
-router.post('/changePassword', function(req, res) {
-  controller
-    .changePassword(req.user, req.body.currentPassword, req.body.newPassword)
-    .then((response) => {
-      res.json(response);
-    });
-});
-
-router.delete('/deleteUser', function(req, res) {
-  controller.deleteUser(req.user).then((response) => {
-    res.json(response);
-  });
-});
-
-// ------------------------PROFILE ABOVE-------------------------------
-
 module.exports = router;

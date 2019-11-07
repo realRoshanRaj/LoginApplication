@@ -16,11 +16,18 @@ $ npm run install
 DB_URL = mongodb://[username:password@]host1[:port1][,...hostN[:portN]][/[database][?options]]
 `
 
-3. Add another line for cookie key
+3. Add line for cookie key
 
 `
 COOKIE_KEY = whateverYouWantItToBe
 `
+
+4. This application has an implementation of Google OAuth. In order for oauth to work successfully the following two lines need to be generated for YOUR account
+
+```
+GOOGLE_CLIENT_ID = generatedid.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET = googleGeneratedClientSecretForOAuth
+```
 
 
 ```

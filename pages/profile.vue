@@ -2,6 +2,26 @@
   <v-container>
     <section>
       <v-card tile flat color="transparent">
+        <v-card-text>
+          <v-row justify="center">
+            <v-avatar
+              size="250"
+              @mouseenter="showAvatarOverlay = true"
+              @mouseleave="showAvatarOverlay = false"
+            >
+              <v-img
+                :src="this.$store.state.profile.avatarURL"
+                alt="Avatar"
+                lazy-src="/imageNotFound.jpg"
+              ></v-img>
+              <v-overlay :value="showAvatarOverlay" absolute>
+                <v-btn large @click="changeAvatarDialog = true">
+                  Edit Avatar
+                </v-btn>
+              </v-overlay>
+            </v-avatar>
+          </v-row>
+        </v-card-text>
         <v-card-title
           class="text-left headline font-weight-bold blue--text text--accent-3"
           >Account</v-card-title
@@ -63,16 +83,6 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-snackbar
-        v-model="showSnackbar"
-        :timeout="2000"
-        top
-        right
-        :color="snackBarColor"
-      >
-        {{ snackBarText }}
-        <v-btn text @click="showSnackbar = false">Close</v-btn>
-      </v-snackbar>
     </section>
 
     <v-progress-linear buffer-value="0" stream color=""></v-progress-linear>
@@ -225,19 +235,100 @@
         </v-col>
       </v-row>
     </section>
+    <section>
+      <v-snackbar
+        v-model="showSnackbar"
+        :timeout="2000"
+        top
+        right
+        :color="snackBarColor"
+      >
+        {{ snackBarText }}
+        <v-btn text @click="showSnackbar = false">Close</v-btn>
+      </v-snackbar>
+      <v-dialog
+        v-model="changeAvatarDialog"
+        :max-width="this.$vuetify.breakpoint.name === 'xs' ? '100%' : '40%'"
+      >
+        <v-card>
+          <v-card-title>
+            Update Avatar
+          </v-card-title>
+          <v-tabs v-model="avatarTabIndex" centered grow>
+            <v-tab>File Upload</v-tab>
+            <v-tab>URL</v-tab>
+            <!-- File Upload TAB -->
+            <v-tab-item>
+              <v-card-text>
+                <v-file-input
+                  v-model="avatarImgFile"
+                  :rules="avatarRules"
+                  accept="image/*"
+                  show-size
+                  counter
+                  placeholder="Pick an avatar"
+                  prepend-icon="fas fa-camera"
+                  label="Avatar"
+                ></v-file-input>
+              </v-card-text>
+            </v-tab-item>
+            <!-- URL TAB -->
+            <v-tab-item>
+              <v-card-text>
+                <v-text-field
+                  v-model="newAvatarURL"
+                  :error-messages="avatarURLErrors"
+                  placeholder="https://icon-library.net/images/guest-icon-png/guest-icon-png-18.jpg"
+                  @keyup.enter="updateAvatar"
+                  @input="$v.newAvatarURL.$touch()"
+                  @blur="$v.newAvatarURL.$touch()"
+                  @focus="$event.target.select()"
+                ></v-text-field>
+              </v-card-text>
+            </v-tab-item>
+          </v-tabs>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="changeAvatarDialog = false"
+              >Close</v-btn
+            >
+            <v-btn color="blue darken-1" text @click="updateAvatar">Save</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </section>
   </v-container>
 </template>
 
 <script>
 import { validationMixin } from 'vuelidate';
-import { required, email, sameAs, minLength } from 'vuelidate/lib/validators';
+import {
+  required,
+  email,
+  sameAs,
+  minLength,
+  url
+} from 'vuelidate/lib/validators';
 import axios from 'axios';
 
 export default {
   mixins: [validationMixin],
   middleware: 'authenticated',
   data: () => ({
-    loading: false,
+    showAvatarOverlay: false,
+    changeAvatarDialog: false,
+    avatarTabIndex: 0,
+    newAvatarURL: '',
+    avatarImgFile: null,
+    avatarRules: [
+      (value) =>
+        !value ||
+        value.size < 3000000 ||
+        'Avatar size should be less than 3 MB!'
+    ],
     emailEnabled: false,
     email: '',
     showOldPass: false,
@@ -265,6 +356,9 @@ export default {
     confirmNewPassword: {
       sameAsPassword: sameAs('newPassword'),
       required
+    },
+    newAvatarURL: {
+      url
     }
   },
   computed: {
@@ -291,11 +385,20 @@ export default {
       !this.$v.confirmNewPassword.required &&
         errors.push('Password Confirmation is required.');
       return errors;
+    },
+    avatarURLErrors() {
+      const errors = [];
+      if (!this.$v.newAvatarURL.$dirty) return errors;
+      !this.$v.newAvatarURL.url &&
+        errors.push('Must be valid url that starts with http:// or https://');
+      return errors;
     }
   },
   asyncData({ req, res }) {
     if (process.server && req.isAuthenticated()) {
-      return { email: req.user.data.email };
+      let avatarURL = req.user.data.avatar;
+      if (avatarURL === '/defaultProfilePic.png') avatarURL = '';
+      return { email: req.user.data.email, newAvatarURL: avatarURL };
     }
 
     return {};
@@ -317,7 +420,7 @@ export default {
         this.$v.email.$touch();
         if (!this.$v.email.$invalid) {
           if (this.email !== this.$store.state.profile.email) {
-            const response = await axios.post('/api/auth/updateEmail', {
+            const response = await axios.post('/api/profile/updateEmail', {
               email: this.email
             });
             if (response.data.success) {
@@ -345,7 +448,7 @@ export default {
     async changePassword() {
       this.dialog = false;
       // actually change password
-      const xhr = await axios.post('/api/auth/changePassword', {
+      const xhr = await axios.post('/api/profile/changePassword', {
         currentPassword: this.oldPassword,
         newPassword: this.newPassword
       });
@@ -359,8 +462,58 @@ export default {
       }
     },
     async deleteAccount() {
-      await axios.delete('/api/auth/deleteUser');
-      window.location.href = `/`;
+      await axios.delete('/api/profile/deleteUser');
+      location.replace('/');
+    },
+    async updateAvatar() {
+      const isURL = this.avatarTabIndex === 1;
+      this.$nuxt.$loading.start();
+      if (isURL) {
+        this.$v.newAvatarURL.$touch();
+        if (
+          !this.$v.newAvatarURL.$invalid &&
+          this.newAvatarURL !== this.$store.state.profile.avatarURL
+        ) {
+          const response = await axios.post('/api/profile/updateAvatarURL', {
+            avatarURL: this.newAvatarURL
+          });
+          if (response.data.success) {
+            this.$store.commit('profile/updateAvatarURL', response.data.url);
+            this.$router.go();
+            this.showSnackbar = true;
+            this.snackBarText = 'Avatar Successfully Updated';
+            this.snackBarColor = 'success';
+            this.changeAvatarDialog = false;
+          } else {
+            this.showSnackbar = true;
+            this.snackBarText = response.data.message;
+            this.snackBarColor = 'error';
+          }
+        } else this.changeAvatarDialog = false;
+      } else if (this.avatarImgFile) {
+        const fd = new FormData();
+        fd.append('image', this.avatarImgFile);
+        const response = await axios({
+          // headers: { 'Content-Type': 'multipart/form-data' },
+          method: 'post',
+          url: '/api/profile/updateAvatarFile',
+          data: fd
+        });
+        if (response.data.success) {
+          this.$store.commit('profile/updateAvatarURL', response.data.url);
+          this.$router.go();
+          this.showSnackbar = true;
+          this.snackBarText = 'Avatar Successfully Updated';
+          this.snackBarColor = 'success';
+          this.changeAvatarDialog = false;
+        } else {
+          this.showSnackbar = true;
+          this.snackBarText = response.data.message;
+          this.snackBarColor = 'error';
+        }
+        // console.log(response);
+      } else this.changeAvatarDialog = false;
+      this.$nuxt.$loading.finish();
     }
   }
 };

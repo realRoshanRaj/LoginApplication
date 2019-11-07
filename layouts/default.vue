@@ -8,7 +8,14 @@
     >
       <v-list-item>
         <v-list-item-avatar>
-          <v-img :src="this.$store.state.profile.avatarURL"></v-img>
+          <v-btn icon @click="clickAvatar">
+            <v-avatar>
+              <v-img
+                :src="this.$store.state.profile.avatarURL"
+                lazy-src="/imageNotFound.jpg"
+              ></v-img>
+            </v-avatar>
+          </v-btn>
         </v-list-item-avatar>
 
         <v-list-item-content>
@@ -99,10 +106,8 @@
 export default {
   data() {
     return {
-      clipped: false,
       drawer: false,
       fixed: false,
-      collapsed: true,
       items: [
         { title: 'Home', icon: 'fas fa-home', link: '/', isHref: false },
         {
@@ -112,12 +117,17 @@ export default {
           isHref: true
         }
       ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js',
       showNavbar: true
     };
+  },
+  methods: {
+    clickAvatar() {
+      if (window.location.pathname !== '/profile') {
+        window.location.href = '/profile';
+      } else {
+        this.drawer = false;
+      }
+    }
   }
 };
 </script>
