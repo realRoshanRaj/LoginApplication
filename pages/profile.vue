@@ -260,6 +260,30 @@
             <!-- File Upload TAB -->
             <v-tab-item>
               <v-card-text>
+                <v-row justify="center">
+                  <v-avatar
+                    v-if="avatarImgFile && !refreshFilePreview"
+                    tile
+                    size="150"
+                  >
+                    <v-img
+                      :src="convertFileToURL()"
+                      lazy-src="/imageNotFound.jpg"
+                    >
+                      <template v-slot:placeholder>
+                        <v-row
+                          class="fill-height ma-0"
+                          align="center"
+                          justify="center"
+                        >
+                          <v-progress-circular
+                            indeterminate
+                            color="grey lighten-5"
+                          ></v-progress-circular>
+                        </v-row> </template
+                    ></v-img>
+                  </v-avatar>
+                </v-row>
                 <v-file-input
                   v-model="avatarImgFile"
                   :rules="avatarRules"
@@ -269,12 +293,30 @@
                   placeholder="Pick an avatar"
                   prepend-icon="fas fa-camera"
                   label="Avatar"
+                  @change="refreshFileImgPreview"
                 ></v-file-input>
               </v-card-text>
             </v-tab-item>
             <!-- URL TAB -->
             <v-tab-item>
               <v-card-text>
+                <v-row justify="center">
+                  <v-avatar v-if="newAvatarURL" tile size="150">
+                    <v-img :src="newAvatarURL" lazy-src="/imageNotFound.jpg">
+                      <template v-slot:placeholder>
+                        <v-row
+                          class="fill-height ma-0"
+                          align="center"
+                          justify="center"
+                        >
+                          <v-progress-circular
+                            indeterminate
+                            color="grey lighten-5"
+                          ></v-progress-circular>
+                        </v-row> </template
+                    ></v-img>
+                  </v-avatar>
+                </v-row>
                 <v-text-field
                   v-model="newAvatarURL"
                   :error-messages="avatarURLErrors"
@@ -283,7 +325,22 @@
                   @input="$v.newAvatarURL.$touch()"
                   @blur="$v.newAvatarURL.$touch()"
                   @focus="$event.target.select()"
-                ></v-text-field>
+                >
+                  <v-tooltip slot="append-outer" right>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        bottom
+                        color="primary"
+                        x-small
+                        fab
+                        v-on="on"
+                        @click="refreshImage"
+                        ><v-icon dark>fas fa-sync</v-icon></v-btn
+                      >
+                    </template>
+                    <span>Refresh Preview</span>
+                  </v-tooltip>
+                </v-text-field>
               </v-card-text>
             </v-tab-item>
           </v-tabs>
@@ -323,6 +380,7 @@ export default {
     avatarTabIndex: 0,
     newAvatarURL: '',
     avatarImgFile: null,
+    refreshFilePreview: false,
     avatarRules: [
       (value) =>
         !value ||
@@ -511,9 +569,31 @@ export default {
           this.snackBarText = response.data.message;
           this.snackBarColor = 'error';
         }
-        // console.log(response);
       } else this.changeAvatarDialog = false;
       this.$nuxt.$loading.finish();
+    },
+    refreshImage() {
+      const url = this.newAvatarURL;
+      this.newAvatarURL = '';
+      this.$nextTick(function() {
+        this.newAvatarURL = url;
+      });
+    },
+    convertFileToURL() {
+      const fileData = this.avatarImgFile;
+      if (fileData) {
+        const url = URL.createObjectURL(fileData);
+        return url;
+      }
+      return '';
+    },
+    refreshFileImgPreview() {
+      if (this.avatarImgFile) {
+        this.refreshFilePreview = true;
+        this.$nextTick(function() {
+          this.refreshFilePreview = false;
+        });
+      }
     }
   }
 };
