@@ -68,16 +68,26 @@
               @blur="$v.email.$touch()"
             >
               <div v-if="!this.$store.state.profile.oauth" slot="append">
-                <v-btn v-if="emailEnabled" icon @click="saveBttn">
-                  <v-icon color="green">{{
-                    emailEnabled ? 'fas fa-check' : undefined
-                  }}</v-icon>
-                </v-btn>
-                <v-btn icon @click="editResetEmail">
-                  <v-icon :color="emailEnabled ? 'red' : undefined">{{
-                    emailEnabled ? 'fas fa-times' : 'fas fa-pen'
-                  }}</v-icon>
-                </v-btn>
+                <v-tooltip v-if="emailEnabled" bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn icon v-on="on" @click="saveBttn">
+                      <v-icon color="green">{{
+                        emailEnabled ? 'fas fa-check' : undefined
+                      }}</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Save</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn icon v-on="on" @click="editResetEmail">
+                      <v-icon :color="emailEnabled ? 'red' : undefined">{{
+                        emailEnabled ? 'fas fa-times' : 'fas fa-pen'
+                      }}</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>{{ emailEnabled ? 'Exit' : 'Edit' }}</span>
+                </v-tooltip>
               </div>
             </v-text-field>
           </v-card>
