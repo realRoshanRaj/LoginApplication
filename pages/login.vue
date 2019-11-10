@@ -45,6 +45,7 @@
                 rounded
                 block
                 color="green"
+                :disabled="this.$v.$invalid"
                 type="submit"
                 >Login</v-btn
               >

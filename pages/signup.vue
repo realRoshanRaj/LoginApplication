@@ -64,6 +64,7 @@
                 block
                 color="green"
                 type="submit"
+                :disabled="this.$v.$invalid"
                 >Create an Account</v-btn
               >
             </v-form>
