@@ -6,7 +6,7 @@
           <v-card-title>
             <v-spacer></v-spacer>
             <v-btn tile dark color="#4885ed" href="/api/auth/google"
-              ><v-icon left light>fab fa-google</v-icon>
+              ><v-icon left light>mdi-google</v-icon>
               <v-divider class="mr-2" vertical dark></v-divider>Sign in with
               Google</v-btn
             >
@@ -33,7 +33,7 @@
                 :error-messages="passwordErrors"
                 label="Password"
                 :type="showPassword ? 'text' : 'password'"
-                :append-icon="showPassword ? 'far fa-eye-slash' : 'far fa-eye'"
+                :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
                 outlined
                 @click:append="showPassword = !showPassword"
                 @input="$v.password.$touch()"

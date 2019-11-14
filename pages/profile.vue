@@ -72,7 +72,7 @@
                   <template v-slot:activator="{ on }">
                     <v-btn icon v-on="on" @click="saveBttn">
                       <v-icon color="green">{{
-                        emailEnabled ? 'fas fa-check' : undefined
+                        emailEnabled ? 'mdi-check-bold' : undefined
                       }}</v-icon>
                     </v-btn>
                   </template>
@@ -82,7 +82,7 @@
                   <template v-slot:activator="{ on }">
                     <v-btn icon v-on="on" @click="editResetEmail">
                       <v-icon :color="emailEnabled ? 'red' : undefined">{{
-                        emailEnabled ? 'fas fa-times' : 'fas fa-pen'
+                        emailEnabled ? 'mdi-close-circle' : 'mdi-pencil'
                       }}</v-icon>
                     </v-btn>
                   </template>
@@ -118,7 +118,7 @@
                   rounded
                   :type="showOldPass ? 'text' : 'password'"
                   label="Current Password"
-                  :append-icon="showOldPass ? 'far fa-eye-slash' : 'far fa-eye'"
+                  :append-icon="showOldPass ? 'mdi-eye-off' : 'mdi-eye'"
                   @click:append="showOldPass = !showOldPass"
                 ></v-text-field>
               </div>
@@ -132,7 +132,7 @@
                   :type="showNewPass ? 'text' : 'password'"
                   rounded
                   label="New Password"
-                  :append-icon="showNewPass ? 'far fa-eye-slash' : 'far fa-eye'"
+                  :append-icon="showNewPass ? 'mdi-eye-off' : 'mdi-eye'"
                   @click:append="showNewPass = !showNewPass"
                   @input="$v.newPassword.$touch()"
                   @blur="$v.newPassword.$touch()"
@@ -301,7 +301,7 @@
                   show-size
                   counter
                   placeholder="Pick an avatar"
-                  prepend-icon="fas fa-camera"
+                  prepend-icon="mdi-camera"
                   label="Avatar"
                   @change="refreshFileImgPreview"
                 ></v-file-input>
@@ -345,7 +345,7 @@
                         fab
                         v-on="on"
                         @click="refreshImage"
-                        ><v-icon dark>fas fa-sync</v-icon></v-btn
+                        ><v-icon dark>mdi-refresh</v-icon></v-btn
                       >
                     </template>
                     <span>Refresh Preview</span>

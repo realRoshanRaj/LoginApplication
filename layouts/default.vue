@@ -109,10 +109,10 @@ export default {
       drawer: false,
       fixed: false,
       items: [
-        { title: 'Home', icon: 'fas fa-home', link: '/', isHref: false },
+        { title: 'Home', icon: 'mdi-home', link: '/', isHref: false },
         {
           title: 'Profile',
-          icon: 'fas fa-user',
+          icon: 'mdi-account',
           link: '/profile',
           isHref: true
         }

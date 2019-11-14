@@ -72,10 +72,11 @@ module.exports = {
       }
     },
     defaultAssets: {
-      icons: 'fa'
+      // font: true,
+      icons: 'mdi'
     },
     icons: {
-      iconfont: 'fa'
+      iconfont: 'mdi'
     }
   },
   /*
