@@ -16,36 +16,36 @@
           <div class="separator">OR</div>
           <div class="flex-grow-1"></div>
           <v-card-text>
-            <v-form method="post" @submit.prevent="login">
+            <v-form @submit.prevent="login" method="post">
               <v-text-field
                 v-model="name"
                 :error-messages="nameErrors"
+                @input="$v.name.$touch()"
+                @blur="$v.name.$touch()"
+                @keydown="updateFieldEvent"
                 label="Username"
                 required
                 outlined
                 autofocus
-                @input="$v.name.$touch()"
-                @blur="$v.name.$touch()"
-                @keydown="updateFieldEvent"
               ></v-text-field>
               <v-text-field
                 v-model="password"
                 :error-messages="passwordErrors"
-                label="Password"
                 :type="showPassword ? 'text' : 'password'"
                 :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-                outlined
                 @click:append="showPassword = !showPassword"
                 @input="$v.password.$touch()"
                 @blur="$v.password.$touch()"
                 @keydown="updateFieldEvent"
+                label="Password"
+                outlined
               ></v-text-field>
               <v-btn
                 :loading="loading"
+                :disabled="this.$v.$invalid"
                 rounded
                 block
                 color="green"
-                :disabled="this.$v.$invalid"
                 type="submit"
                 >Login</v-btn
               >

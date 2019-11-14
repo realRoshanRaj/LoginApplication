@@ -5,9 +5,9 @@
         <v-card-text>
           <v-row justify="center">
             <v-avatar
-              size="250"
               @mouseenter="showAvatarOverlay = true"
               @mouseleave="showAvatarOverlay = false"
+              size="250"
             >
               <v-img
                 :src="this.$store.state.profile.avatarURL"
@@ -15,7 +15,7 @@
                 lazy-src="/imageNotFound.jpg"
               ></v-img>
               <v-overlay :value="showAvatarOverlay" absolute>
-                <v-btn large @click="changeAvatarDialog = true">
+                <v-btn @click="changeAvatarDialog = true" large>
                   Edit Avatar
                 </v-btn>
               </v-overlay>
@@ -39,12 +39,12 @@
         <v-col class="mt-3" cols="12" xl="7" lg="7" md="6">
           <v-card tile flat color="transparent">
             <v-text-field
+              :value="this.$store.state.profile.username"
               disabled
               solo
               dense
               flat
               rounded
-              :value="this.$store.state.profile.username"
             ></v-text-field>
           </v-card>
         </v-col>
@@ -57,20 +57,20 @@
           <v-card tile flat color="transparent">
             <v-text-field
               v-model="email"
-              dense
-              solo
-              flat
-              rounded
               :disabled="this.$store.state.profile.oauth"
               :error-messages="emailErrors"
               :readonly="!emailEnabled"
               @input="$v.email.$touch()"
               @blur="$v.email.$touch()"
+              dense
+              solo
+              flat
+              rounded
             >
-              <div v-if="!this.$store.state.profile.oauth" slot="append">
+              <div slot="append" v-if="!this.$store.state.profile.oauth">
                 <v-tooltip v-if="emailEnabled" bottom>
                   <template v-slot:activator="{ on }">
-                    <v-btn icon v-on="on" @click="saveBttn">
+                    <v-btn v-on="on" @click="saveBttn" icon>
                       <v-icon color="green">{{
                         emailEnabled ? 'mdi-check-bold' : undefined
                       }}</v-icon>
@@ -80,7 +80,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
-                    <v-btn icon v-on="on" @click="editResetEmail">
+                    <v-btn v-on="on" @click="editResetEmail" icon>
                       <v-icon :color="emailEnabled ? 'red' : undefined">{{
                         emailEnabled ? 'mdi-close-circle' : 'mdi-pencil'
                       }}</v-icon>
@@ -109,17 +109,17 @@
         </v-col>
         <v-col class="text-left" cols="12" xl="7" lg="7" md="6">
           <v-card tile flat color="transparent">
-            <v-form method="post" @submit.prevent="changePasswordConfirmation">
+            <v-form @submit.prevent="changePasswordConfirmation" method="post">
               <div>
                 <v-text-field
                   v-model="oldPassword"
+                  :type="showOldPass ? 'text' : 'password'"
+                  :append-icon="showOldPass ? 'mdi-eye-off' : 'mdi-eye'"
+                  @click:append="showOldPass = !showOldPass"
                   outlined
                   dense
                   rounded
-                  :type="showOldPass ? 'text' : 'password'"
                   label="Current Password"
-                  :append-icon="showOldPass ? 'mdi-eye-off' : 'mdi-eye'"
-                  @click:append="showOldPass = !showOldPass"
                 ></v-text-field>
               </div>
               <v-divider></v-divider>
@@ -127,26 +127,26 @@
                 <v-text-field
                   v-model="newPassword"
                   :error-messages="newPasswordErrors"
-                  outlined
-                  dense
                   :type="showNewPass ? 'text' : 'password'"
-                  rounded
-                  label="New Password"
                   :append-icon="showNewPass ? 'mdi-eye-off' : 'mdi-eye'"
                   @click:append="showNewPass = !showNewPass"
                   @input="$v.newPassword.$touch()"
                   @blur="$v.newPassword.$touch()"
+                  outlined
+                  dense
+                  rounded
+                  label="New Password"
                 ></v-text-field>
                 <v-text-field
                   v-model="confirmNewPassword"
                   :error-messages="confirmPasswordErrors"
+                  @input="$v.confirmNewPassword.$touch()"
+                  @blur="$v.confirmNewPassword.$touch()"
                   outlined
                   rounded
                   dense
                   type="password"
                   label="Confirm New Password"
-                  @input="$v.confirmNewPassword.$touch()"
-                  @blur="$v.confirmNewPassword.$touch()"
                 ></v-text-field>
               </div>
               <v-btn :disabled="this.$v.$invalid" type="submit"
@@ -172,11 +172,11 @@
                   <v-card-actions>
                     <v-spacer></v-spacer>
 
-                    <v-btn color="red darken-1" text @click="dialog = false"
+                    <v-btn @click="dialog = false" color="red darken-1" text
                       >No</v-btn
                     >
 
-                    <v-btn color="green darken-1" text @click="changePassword"
+                    <v-btn @click="changePassword" color="green darken-1" text
                       >Yes</v-btn
                     >
                   </v-card-actions>
@@ -202,9 +202,9 @@
         <v-col align-self="center" cols="12" xl="7" lg="7" md="6">
           <v-card tile flat color="transparent">
             <v-btn
+              @click="deleteAccountConfirmation = true"
               outlined
               color="red"
-              @click="deleteAccountConfirmation = true"
               >Delete this account...</v-btn
             >
 
@@ -229,13 +229,13 @@
                   <v-spacer></v-spacer>
 
                   <v-btn
+                    @click="deleteAccountConfirmation = false"
                     color="red darken-1"
                     text
-                    @click="deleteAccountConfirmation = false"
                     >No</v-btn
                   >
 
-                  <v-btn color="green darken-1" text @click="deleteAccount"
+                  <v-btn @click="deleteAccount" color="green darken-1" text
                     >Yes</v-btn
                   >
                 </v-card-actions>
@@ -249,12 +249,12 @@
       <v-snackbar
         v-model="showSnackbar"
         :timeout="2000"
+        :color="snackBarColor"
         top
         right
-        :color="snackBarColor"
       >
         {{ snackBarText }}
-        <v-btn text @click="showSnackbar = false">Close</v-btn>
+        <v-btn @click="showSnackbar = false" text>Close</v-btn>
       </v-snackbar>
       <v-dialog
         v-model="changeAvatarDialog"
@@ -297,13 +297,13 @@
                 <v-file-input
                   v-model="avatarImgFile"
                   :rules="avatarRules"
+                  @change="refreshFileImgPreview"
                   accept="image/*"
                   show-size
                   counter
                   placeholder="Pick an avatar"
                   prepend-icon="mdi-camera"
                   label="Avatar"
-                  @change="refreshFileImgPreview"
                 ></v-file-input>
               </v-card-text>
             </v-tab-item>
@@ -330,21 +330,21 @@
                 <v-text-field
                   v-model="newAvatarURL"
                   :error-messages="avatarURLErrors"
-                  placeholder="https://icon-library.net/images/guest-icon-png/guest-icon-png-18.jpg"
                   @keyup.enter="updateAvatar"
                   @input="$v.newAvatarURL.$touch()"
                   @blur="$v.newAvatarURL.$touch()"
                   @focus="$event.target.select()"
+                  placeholder="https://icon-library.net/images/guest-icon-png/guest-icon-png-18.jpg"
                 >
                   <v-tooltip slot="append-outer" right>
                     <template v-slot:activator="{ on }">
                       <v-btn
+                        v-on="on"
+                        @click="refreshImage"
                         bottom
                         color="primary"
                         x-small
                         fab
-                        v-on="on"
-                        @click="refreshImage"
                         ><v-icon dark>mdi-refresh</v-icon></v-btn
                       >
                     </template>
@@ -357,12 +357,12 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
+              @click="changeAvatarDialog = false"
               color="blue darken-1"
               text
-              @click="changeAvatarDialog = false"
               >Close</v-btn
             >
-            <v-btn color="blue darken-1" text @click="updateAvatar">Save</v-btn>
+            <v-btn @click="updateAvatar" color="blue darken-1" text>Save</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>

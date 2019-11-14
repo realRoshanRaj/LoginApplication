@@ -8,7 +8,7 @@
     >
       <v-list-item>
         <v-list-item-avatar>
-          <v-btn icon @click="clickAvatar">
+          <v-btn @click="clickAvatar" icon>
             <v-avatar>
               <v-img
                 :src="this.$store.state.profile.avatarURL"
@@ -62,7 +62,7 @@
       </div>
     </v-navigation-drawer>
 
-    <v-app-bar app dense :collapse="drawer">
+    <v-app-bar :collapse="drawer" app dense>
       <v-app-bar-nav-icon
         v-if="this.$store.state.login.isAuthenticated"
         @click="drawer = !drawer"

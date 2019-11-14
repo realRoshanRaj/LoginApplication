@@ -17,54 +17,54 @@
 
           <div class="flex-grow-1"></div>
           <v-card-text>
-            <v-form method="post" @submit.prevent="register">
+            <v-form @submit.prevent="register" method="post">
               <v-text-field
                 v-model="name"
                 :error-messages="nameErrors"
-                label="Username"
                 :loading="loadingUsername"
+                @input="$v.name.$touch()"
+                @blur="$v.name.$touch()"
+                label="Username"
                 autofocus
                 required
                 outlined
-                @input="$v.name.$touch()"
-                @blur="$v.name.$touch()"
               ></v-text-field>
               <v-text-field
                 v-model="email"
                 :error-messages="emailErrors"
+                @input="$v.email.$touch()"
+                @blur="$v.email.$touch()"
                 label="E-mail"
                 required
                 outlined
-                @input="$v.email.$touch()"
-                @blur="$v.email.$touch()"
               ></v-text-field>
               <v-text-field
                 v-model="password"
                 :error-messages="passwordErrors"
-                label="Password"
                 :type="'Password'"
-                required
-                outlined
                 @input="$v.password.$touch()"
                 @blur="$v.password.$touch()"
+                label="Password"
+                required
+                outlined
               ></v-text-field>
               <v-text-field
                 v-model="confirmPassword"
                 :error-messages="confirmPasswordErrors"
-                label="Confirm Password"
                 :type="'Password'"
-                required
-                outlined
                 @input="$v.confirmPassword.$touch()"
                 @blur="$v.confirmPassword.$touch()"
+                label="Confirm Password"
+                required
+                outlined
               ></v-text-field>
               <v-btn
                 :loading="loadingRegister"
+                :disabled="this.$v.$invalid"
                 rounded
                 block
                 color="green"
                 type="submit"
-                :disabled="this.$v.$invalid"
                 >Create an Account</v-btn
               >
             </v-form>
