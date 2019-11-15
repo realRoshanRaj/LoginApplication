@@ -17,6 +17,14 @@ router.post('/updateEmail', function(req, res) {
   });
 });
 
+router.post('/updateDisplayName', function(req, res) {
+  controller
+    .updateDisplayName(req.user._id, req.body.displayName)
+    .then((response) => {
+      res.json(response);
+    });
+});
+
 router.post('/changePassword', function(req, res) {
   controller
     .changePassword(req.user, req.body.currentPassword, req.body.newPassword)

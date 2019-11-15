@@ -19,13 +19,22 @@
           <v-card-text>
             <v-form @submit.prevent="register" method="post">
               <v-text-field
-                v-model="name"
+                v-model="username"
                 :error-messages="nameErrors"
                 :loading="loadingUsername"
-                @input="$v.name.$touch()"
-                @blur="$v.name.$touch()"
+                @input="$v.username.$touch()"
+                @blur="$v.username.$touch()"
                 label="Username"
                 autofocus
+                required
+                outlined
+              ></v-text-field>
+              <v-text-field
+                v-model="displayName"
+                :error-messages="displayNameErrors"
+                @input="$v.displayName.$touch()"
+                @blur="$v.displayName.$touch()"
+                label="Display Name"
                 required
                 outlined
               ></v-text-field>
@@ -95,7 +104,7 @@ export default {
   mixins: [validationMixin],
   middleware: 'guest',
   validations: {
-    name: {
+    username: {
       required,
       minLength: minLength(4),
       alphaNum,
@@ -108,6 +117,7 @@ export default {
         return xhr.data.isUnique;
       }
     },
+    displayName: { required },
     email: { required, email },
     password: { required, minLength: minLength(6) },
     confirmPassword: {
@@ -122,7 +132,8 @@ export default {
   },
 
   data: () => ({
-    name: '',
+    username: '',
+    displayName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -133,13 +144,19 @@ export default {
   computed: {
     nameErrors() {
       const errors = [];
-      if (!this.$v.name.$dirty) return errors;
-      !this.$v.name.minLength &&
+      if (!this.$v.username.$dirty) return errors;
+      !this.$v.username.minLength &&
         errors.push('Username must be at least 4 characters long');
-      !this.$v.name.alphaNum &&
+      !this.$v.username.alphaNum &&
         errors.push('Usernames can only contain numbers or letters.');
-      !this.$v.name.required && errors.push('Username is required.');
-      !this.$v.name.isUnique && errors.push('Username is taken.');
+      !this.$v.username.required && errors.push('Username is required.');
+      !this.$v.username.isUnique && errors.push('Username is taken.');
+      return errors;
+    },
+    displayNameErrors() {
+      const errors = [];
+      if (!this.$v.displayName.$dirty) return errors;
+      !this.$v.displayName.required && errors.push('Name is required');
       return errors;
     },
     emailErrors() {
@@ -174,16 +191,14 @@ export default {
       if (!this.$v.$invalid) {
         this.loadingRegister = true;
         await axios.post('/api/auth/register', {
-          username: this.name.trim().toLowerCase(),
+          username: this.username.trim().toLowerCase(),
+          displayName: this.displayName.trim(),
           email: this.email.trim().toLowerCase(),
           password: this.password
         });
         this.loadingRegister = false;
         window.location.href = `/profile`;
       }
-    },
-    submit() {
-      this.$v.$touch();
     },
     clear() {
       this.$v.$reset();

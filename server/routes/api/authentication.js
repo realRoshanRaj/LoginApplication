@@ -14,7 +14,12 @@ router.post('/uniqueUsername', function(req, res, next) {
 
 router.post('/register', function(req, res, next) {
   controller
-    .register(req.body.username, req.body.email, req.body.password)
+    .register(
+      req.body.username,
+      req.body.displayName,
+      req.body.email,
+      req.body.password
+    )
     .then((response) => {
       if (!response.valid) {
         res.json({ loggedIn: false });

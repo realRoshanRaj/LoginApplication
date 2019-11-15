@@ -14,7 +14,7 @@ exports.googleAuth = async function(profile) {
     type: 'google',
     data: {
       id: json.sub,
-      username: json.name,
+      displayName: json.name,
       email: json.email,
       avatar: json.picture
     }
@@ -59,7 +59,7 @@ exports.validateUser = async function(username, password) {
   }
 };
 
-exports.register = async function(username, email, password) {
+exports.register = async function(username, displayName, email, password) {
   username = username.trim().toLowerCase();
   email = email.trim();
   if (username && email && password) {
@@ -70,6 +70,7 @@ exports.register = async function(username, email, password) {
         data: {
           username,
           email,
+          displayName,
           passwordHash: bcrypt.hashSync(password, 10),
           avatar: '/defaultProfilePic.png'
         }
