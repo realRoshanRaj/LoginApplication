@@ -3,12 +3,8 @@ export default function({ store, redirect, req }) {
     const isAuthenticated = req.isAuthenticated();
     store.commit('login/updateLogin', isAuthenticated);
     store.commit(
-      'profile/updateUsername',
-      isAuthenticated ? req.user.data.username : 'Guest'
-    );
-    store.commit(
-      'profile/updateUsername',
-      isAuthenticated ? req.user.data.username : '/defaultProfilePic.png'
+      'profile/updateDisplayName',
+      isAuthenticated ? req.user.data.displayName : 'Guest'
     );
     if (!store.state.login.isAuthenticated) {
       redirect('/login');
@@ -18,6 +14,7 @@ export default function({ store, redirect, req }) {
         store.commit('profile/updateOAuth', true);
         store.commit('profile/updateAvatarURL', req.user.data.avatar);
       } else if (req.user.type === 'local') {
+        store.commit('profile/updateUsername', req.user.data.username);
         store.commit('profile/updateOAuth', false);
         store.commit('profile/updateAvatarURL', req.user.data.avatar);
       }

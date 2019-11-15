@@ -20,7 +20,7 @@
 
         <v-list-item-content>
           <v-list-item-title>
-            {{ this.$store.state.profile.username }}
+            {{ this.$store.state.profile.displayName }}
           </v-list-item-title>
         </v-list-item-content>
       </v-list-item>
@@ -114,7 +114,7 @@ export default {
           title: 'Profile',
           icon: 'mdi-account',
           link: '/profile',
-          isHref: true
+          isHref: false
         }
       ],
       showNavbar: true

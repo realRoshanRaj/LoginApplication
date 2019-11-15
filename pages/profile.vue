@@ -27,9 +27,9 @@
           >Account</v-card-title
         >
       </v-card>
-
-      <v-progress-linear buffer-value="0" stream color=""></v-progress-linear>
-
+    </section>
+    <v-progress-linear buffer-value="0" stream color=""></v-progress-linear>
+    <section>
       <v-row class="ma-1">
         <v-col class="mt-4" cols="12" xl="5" lg="5" md="6">
           <v-card tile flat color="transparent">
@@ -48,6 +48,7 @@
             ></v-text-field>
           </v-card>
         </v-col>
+        <!-- Email-->
         <v-col class="mt-2" cols="12" xl="5" lg="5" md="6">
           <v-card tile flat color="transparent">
             <p class="title">Email</p>
@@ -70,7 +71,7 @@
               <div slot="append" v-if="!this.$store.state.profile.oauth">
                 <v-tooltip v-if="emailEnabled" bottom>
                   <template v-slot:activator="{ on }">
-                    <v-btn v-on="on" @click="saveBttn" icon>
+                    <v-btn v-on="on" @click="saveEmailBttn" icon>
                       <v-icon color="green">{{
                         emailEnabled ? 'mdi-check-bold' : undefined
                       }}</v-icon>
@@ -87,6 +88,50 @@
                     </v-btn>
                   </template>
                   <span>{{ emailEnabled ? 'Exit' : 'Edit' }}</span>
+                </v-tooltip>
+              </div>
+            </v-text-field>
+          </v-card>
+        </v-col>
+        <!--Display Name-->
+        <v-col class="mt-2" cols="12" xl="5" lg="5" md="6">
+          <v-card tile flat color="transparent">
+            <p class="title">Name</p>
+          </v-card>
+        </v-col>
+        <v-col cols="12" xl="7" lg="7" md="6">
+          <v-card tile flat color="transparent">
+            <v-text-field
+              v-model="displayName"
+              :error-messages="displayNameErrors"
+              :readonly="!displayNameEnabled"
+              @input="$v.displayName.$touch()"
+              @blur="$v.displayName.$touch()"
+              dense
+              solo
+              flat
+              rounded
+            >
+              <div slot="append">
+                <v-tooltip v-if="displayNameEnabled" bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn v-on="on" @click="saveDisplayNameBtn" icon>
+                      <v-icon color="green">{{
+                        displayNameEnabled ? 'mdi-check-bold' : undefined
+                      }}</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Save</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn v-on="on" @click="editResetDisplayName" icon>
+                      <v-icon :color="displayNameEnabled ? 'red' : undefined">{{
+                        displayNameEnabled ? 'mdi-close-circle' : 'mdi-pencil'
+                      }}</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>{{ displayNameEnabled ? 'Exit' : 'Edit' }}</span>
                 </v-tooltip>
               </div>
             </v-text-field>
@@ -399,6 +444,8 @@ export default {
     ],
     emailEnabled: false,
     email: '',
+    displayNameEnabled: false,
+    displayName: 'Guest',
     showOldPass: false,
     oldPassword: '',
     showNewPass: false,
@@ -427,7 +474,8 @@ export default {
     },
     newAvatarURL: {
       url
-    }
+    },
+    displayName: { required }
   },
   computed: {
     emailErrors() {
@@ -460,16 +508,32 @@ export default {
       !this.$v.newAvatarURL.url &&
         errors.push('Must be valid url that starts with http:// or https://');
       return errors;
+    },
+    displayNameErrors() {
+      const errors = [];
+      if (!this.$v.displayName.$dirty) return errors;
+      !this.$v.displayName.required && errors.push('Name is required.');
+      return errors;
     }
   },
-  asyncData({ req, res }) {
+  asyncData({ req, store }) {
     if (process.server && req.isAuthenticated()) {
       let avatarURL = req.user.data.avatar;
       if (avatarURL === '/defaultProfilePic.png') avatarURL = '';
-      return { email: req.user.data.email, newAvatarURL: avatarURL };
+      return {
+        email: req.user.data.email,
+        newAvatarURL: avatarURL,
+        displayName: req.user.data.displayName
+      };
     }
 
-    return {};
+    let avatarURL = store.state.profile.avatarURL;
+    if (avatarURL === '/defaultProfilePic.png') avatarURL = '';
+    return {
+      displayName: store.state.profile.displayName,
+      email: store.state.profile.email,
+      newAvatarURL: avatarURL
+    };
   },
   methods: {
     editResetEmail() {
@@ -482,7 +546,7 @@ export default {
         this.emailEnabled = true;
       }
     },
-    async saveBttn() {
+    async saveEmailBttn() {
       if (this.emailEnabled) {
         // save new email to account
         this.$v.email.$touch();
@@ -509,6 +573,46 @@ export default {
         }
       }
       this.emailEnabled = false;
+    },
+    editResetDisplayName() {
+      if (this.displayNameEnabled) {
+        // reset
+        this.displayName = this.$store.state.profile.displayName;
+        this.displayNameEnabled = false;
+      } else {
+        // edit
+        this.displayNameEnabled = true;
+      }
+    },
+    async saveDisplayNameBtn() {
+      if (this.displayNameEnabled) {
+        this.$v.displayName.$touch();
+        if (!this.$v.displayName.$invalid) {
+          if (this.displayName !== this.$store.state.profile.displayName) {
+            const response = await axios.post(
+              '/api/profile/updateDisplayName',
+              {
+                displayName: this.displayName
+              }
+            );
+            if (response.data.success) {
+              this.showSnackbar = true;
+              this.snackBarText = 'Name Successfully Updated';
+              this.snackBarColor = 'success';
+              this.$store.commit('profile/updateDisplayName', this.displayName);
+            } else {
+              this.showSnackbar = true;
+              this.snackBarText = 'Name Update Failed';
+              this.snackBarColor = 'error';
+            }
+          } else {
+            this.showSnackbar = true;
+            this.snackBarText = 'No Change to Name Detected';
+            this.snackBarColor = 'error';
+          }
+        }
+      }
+      this.displayNameEnabled = false;
     },
     changePasswordConfirmation() {
       this.dialog = true;

@@ -16,6 +16,19 @@ exports.updateEmail = async function(id, email) {
   return { success: false };
 };
 
+exports.updateDisplayName = async function(id, displayName) {
+  displayName = displayName.trim();
+  if (displayName) {
+    const user = await User.findByIdAndUpdate(
+      { _id: id },
+      { 'data.displayName': displayName }
+    );
+    return { success: true };
+  }
+
+  return { success: false };
+};
+
 exports.changePassword = async function(user, currentPassword, newPassword) {
   if (user) {
     if (bcrypt.compareSync(currentPassword, user.data.passwordHash)) {
